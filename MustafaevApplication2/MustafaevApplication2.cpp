@@ -12,7 +12,7 @@ struct Pipe {
 	bool inRepair;
 
 	bool valid() {
-		if (lengthPipe > 0 && diametrPipe > 0) {
+		if (lengthPipe > 0 && diametrPipe > 0 && (inRepair == 1 || inRepair == 0)) {
 			return true;
 		}
 		else {
@@ -42,10 +42,22 @@ Pipe newPipe;
 Station newStation;
 
 
+void inline clearMenu() {
+	system("cls");
+}
 
+bool validateInput() {
+	if (cin.fail()) {
+		cin.clear();
+		cin.ignore(312312, '\n');
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 
-void showMenu()
-{
+void printMenu() {
 	cout << "1. Добавить трубу" << endl;
 	cout << "2. Добавить КС" << endl;
 	cout << "3. Просмотр всех объектов" << endl;
@@ -57,7 +69,7 @@ void showMenu()
 }
 
 void editPipe() {
-	system("cls");
+	clearMenu();
 	if (newPipe.valid()) {
 		cout << "| Редактирование трубы |" << endl;
 		cout << " Длина трубы: " << newPipe.lengthPipe << endl;
@@ -69,8 +81,9 @@ void editPipe() {
 		cin >> newPipe.diametrPipe;
 		cout << "В ремонте: ";
 		cin >> newPipe.inRepair;
+		if (validateInput()) editPipe();
 		if (newPipe.valid()) {
-			system("cls");
+			clearMenu();
 			cout << "Успешно" << endl;
 		}
 		else {
@@ -80,18 +93,18 @@ void editPipe() {
 	else {
 		cout << "Трубы не существует" << endl;
 	}
-	showMenu();
+	printMenu();
 	loop = 1;
 }
 
-void editKs() {
-	system("cls");
+void editStation() {
+	clearMenu();
 	if (newStation.valid()) {
 		cout << "| Редактирование КС |" << endl;
 		cout << " Название кс: " << newStation.name << endl;
 		cout << " Цехов: " << newStation.countWorkshop << endl;
 		cout << " Рабочих цехов: " << newStation.countActiveWorkshop << endl;
-		cout << " Показатель: " << newStation.property << endl;
+		cout << " Показатель эффективности: " << newStation.property << endl;
 		cout << "Введите название: ";
 		cin >> newStation.name;
 		cout << "Введите количество цехов: ";
@@ -101,7 +114,7 @@ void editKs() {
 		cout << "Введите показатель: ";
 		cin >> newStation.property;
 		if (newStation.valid()) {
-			system("cls");
+			clearMenu();
 			cout << "Успешно" << endl;
 		}
 		else {
@@ -111,18 +124,18 @@ void editKs() {
 	else {
 		cout << "КС не существует" << endl;
 	}
-	showMenu();
+	printMenu();
 	loop = 1;
 }
 
-void SaveToFile(){
-	system("cls");
+void SaveToFile() {
+	clearMenu();
 	string path;
 	cout << "Введите название файла: ";
 	cin >> path;
 	ofstream fout;
 	fout.open(path, ofstream::trunc);
-	if (fout.is_open()){
+	if (fout.is_open()) {
 		if (newPipe.valid()) {
 			fout << "Т" << endl;
 			fout << newPipe.lengthPipe << endl;
@@ -131,10 +144,10 @@ void SaveToFile(){
 			newPipe.lengthPipe = 0;
 		}
 		else {
-			system("cls");
+			clearMenu();
 			cout << "Создайте трубу" << endl;
 			fout.close();
-			showMenu();
+			printMenu();
 			loop = 1;
 			return;
 		}
@@ -148,27 +161,27 @@ void SaveToFile(){
 			newStation.name = "";
 		}
 		else {
-			system("cls");
+			clearMenu();
 			cout << "Создайте КС" << endl;
 			fout.close();
-			showMenu();
+			printMenu();
 			loop = 1;
 			return;
 		}
-		system("cls");
+		clearMenu();
 		cout << "Файл сохранен" << endl;
 	}
 	else {
-		system("cls");
+		clearMenu();
 		cout << "Ошибка сохранения" << endl;
 	}
 	fout.close();
-	showMenu();
+	printMenu();
 	loop = 1;
 }
 
 void LoadFromFile() {
-	system("cls");
+	clearMenu();
 	string path;
 	cout << "Введите название файла: ";
 	cin >> path;
@@ -185,46 +198,59 @@ void LoadFromFile() {
 		fin >> newStation.countWorkshop;
 		fin >> newStation.countActiveWorkshop;
 		fin >> newStation.property;
-		system("cls");
+		clearMenu();
 		cout << "Файл импортирован" << endl;
 	}
 	else {
-		system("cls");
+		clearMenu();
 		cout << "Ошибка открытия файла" << endl;
 	}
 	fin.close();
-	showMenu();
+	printMenu();
 	loop = 1;
 }
 
 
 void addPipe()
 {
-	system("cls");
+	clearMenu();
 	cout << "Введите длину трубы: ";
 	cin >> newPipe.lengthPipe;
+	if (cin.fail()) {
+		cin.clear();
+		cin.ignore(32767, '\n');
+		addPipe();
+	}
 	cout << "Введите диаметр трубы: ";
 	cin >> newPipe.diametrPipe;
 	cout << "В ремонте: ";
 	cin >> newPipe.inRepair;
-	system("cls");
-	cout << "|                           Труба добавлена                    |" << endl;
-	showMenu();
-	loop = 1;
+	cout << newPipe.valid();
+	if (newPipe.valid()) {
+		clearMenu();
+		cout << "Труба добавлена" << endl;
+		printMenu();
+		loop = 1;
+	}
+	else
+	{
+		addPipe();
+	}
+	
 }
 
 
 
-void showObjects()
+void printObjects()
 {
-	system("cls");
+	clearMenu();
 	ifstream fin;
 	int i, p;
 	cout << "1. Просмотреть трубы" << endl;
 	cout << "2. Просмотреть кс" << endl;
 	cout << "Выберите пункт: ";
 	cin >> p;
-	system("cls");
+	clearMenu();
 	switch (p)
 	{
 	case 1:
@@ -237,8 +263,8 @@ void showObjects()
 		else {
 			cout << "Записей нет" << endl;
 		}
-		
-		showMenu();
+
+		printMenu();
 		loop = 1;
 		break;
 	case 2:
@@ -252,17 +278,17 @@ void showObjects()
 		else {
 			cout << "Записей нет" << endl;
 		}
-		
-		showMenu();
+
+		printMenu();
 		loop = 1;
 		break;
 	}
 	fin.close();
 }
 
-void addKs()
+void addStation()
 {
-	system("cls");
+	clearMenu();
 	cout << "Укажите название станции: ";
 	cin >> newStation.name;
 	cout << "Укажите кол-во цехов: ";
@@ -273,38 +299,45 @@ void addKs()
 	cin >> newStation.property;
 	if (!newStation.valid()) {
 		cout << "Ошибка, попробуйте еще раз" << endl;
-		addKs();
+		addStation();
 	}
-	system("cls");
-	cout << "|                           КС добавлена                    |" << endl;
-	showMenu();
+	clearMenu();
+	cout << "КС добавлена" << endl;
+	printMenu();
 	loop = 1;
 }
-
-
 
 int main()
 {
 	setlocale(LC_ALL, "");
 	int menupoint;
-	showMenu();
+	printMenu();
 	while (loop != 0)
 	{
 		cout << "Выберите пункт меню: ";
 		cin >> menupoint;
+		if (cin.fail())
+		{
+			cout << "Ошибка" << endl;
+			cin.clear();
+			cin.ignore(12, '\n');
+			clearMenu();
+			main();
+			
+		}
 		switch (menupoint)
 		{
-		case 1:
+		case 1:	
 			loop = 0;
 			addPipe();
 			break;
 		case 2:
 			loop = 0;
-			addKs();
+			addStation();
 			break;
 		case 3:
 			loop = 0;
-			showObjects();
+			printObjects();
 			break;
 		case 4:
 			loop = 0;
@@ -312,7 +345,7 @@ int main()
 			break;
 		case 5:
 			loop = 0;
-			editKs();
+			editStation();
 			break;
 		case 6:
 			loop = 0;
@@ -323,12 +356,14 @@ int main()
 			LoadFromFile();
 			break;
 		case 0:
+			cout << "Завершение программы";
 			return 0;
 			break;
 		default:
 			cout << "Повторите еще раз";
 			break;
 		}
+		
 	}
 	return 0;
 }
