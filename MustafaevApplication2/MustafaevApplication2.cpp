@@ -6,7 +6,6 @@
 
 using namespace std;
  
-
 void clearCin() {
 	cin.clear();
 	cin.ignore(123, '\n');
@@ -46,8 +45,6 @@ void SaveToFile(string path, const Pipe& pipe, const Station& station) {
 			cout << "Ошибка сохранения. Создайте все объекты" << endl;
 
 		}
-		
-
 	}
 	else {
 		cout << "Ошибка открытия файла" << endl;
@@ -76,38 +73,41 @@ void LoadFromFile(string path, Pipe& pipe, Station& station) {
 			switch (i) {
 			case 0:
 				pipe.setLength(ch);
+				ch = 0;
 				break;
 			case 1:
 				pipe.setDiametr(ch);
+				ch = 0;
 				break;
 			case 2:
 				pipe.setInRepair(ch);
+				ch = 0;
 				break;
 			case 3:
 				station.setName(name);
 				break;
 			case 4:
 				station.setCountWorkshop(ch);
+				ch = 0;
 				break;
 			case 5:
 				station.setCountActiveWorkshop(ch);
+				ch = 0;
 				break;
 			case 6:
 				station.setEfficiency(ch);
+				ch = 0;
 				break;
 			}
 
 		}
-		if (pipe.getLength() != 0 && pipe.getDiametr() != 0 && station.getName() != "" && station.getCountWorkshop() != 0) {
+		if (pipe.getLength() != 0 && pipe.getDiametr() != 0 && station.getName() != "" && station.getCountWorkshop() != 0 && station.getEfficiency() != 0) {
 			cout << "Файл загружен" << endl;
 		}
 		else
 		{
 			cout << "объекты не загружены" << endl;
 		}
-
-		
-
 	}
 	else {
 		cout << "Ошибка открытия файла" << endl;
@@ -138,10 +138,10 @@ void InputStation(Station& station) {
 	while (true) {
 		if (st_name != 1) {
 			cout << "Введите название станции: ";
-			cin >> name;
-			if (!cin.fail()) {
+			cin.ignore();
+			getline(cin, name);
+			if (name != "") {
 				st_name = 1;
-				
 			}
 			else {
 				cout << "Попробуйте еще раз" << endl;
@@ -238,8 +238,6 @@ void InputPipe(Pipe& pipe) {
 
 
 
-
-
 void updateStation(Station& station) {
 	clearMenu();
 	if (station.getName() == "") return;
@@ -306,9 +304,6 @@ void updatePipe(Pipe& pipe) {
 	else {
 		cout << "Повторите попытку" << endl;
 	}
-	
-	
-
 }
 
 void printObjects(Pipe& pipe, Station& station) {
@@ -344,19 +339,15 @@ int main() {
 				InputPipe(pipe);
 				break;
 			case 2:
-				
 				InputStation(station);
 				break;
 			case 3:
-				
 				printObjects(pipe, station);
 				break;
 			case 4:
-				
 				updatePipe(pipe);
 				break;
 			case 5:
-				
 				updateStation(station);
 				break;
 			case 6:
