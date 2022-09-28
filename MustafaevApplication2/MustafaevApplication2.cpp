@@ -98,12 +98,13 @@ void LoadFromFile(string path, Pipe& pipe, Station& station) {
 			}
 
 		}
-		/*if (pipe.valid() && station.valid()) {
+		if (pipe.getLength() != 0 && pipe.getDiametr() != 0 && station.getName() != "" && station.getCountWorkshop() != 0) {
 			cout << "Файл загружен" << endl;
 		}
-		else {
-			cout << "Объекты не загружены" << endl;
-		}*/
+		else
+		{
+			cout << "объекты не загружены" << endl;
+		}
 
 		
 
