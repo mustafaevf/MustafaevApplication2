@@ -3,16 +3,16 @@
 
 Pipe::Pipe()
 {
-	this->diametr = 0;
+	this->diametr = 0.0;
 	this->length = 0;
 	this->inRepair = 0;
 }
 
-int Pipe::getLength() const {
+double Pipe::getLength() const {
 	return this->length;
 }
 
-int Pipe::getDiametr() const {
+double Pipe::getDiametr() const {
 	return this->diametr;
 }
 
@@ -20,11 +20,11 @@ bool Pipe::getInRepair() const {
 	return this->inRepair;
 }
 
-void Pipe::setLength(int length) {
+void Pipe::setLength(double length) {
 	this->length = length;
 }
 
-void Pipe::setDiametr(int diametr) {
+void Pipe::setDiametr(double diametr) {
 	this->diametr = diametr;
 }
 

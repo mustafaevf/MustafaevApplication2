@@ -1,17 +1,17 @@
 
 class Pipe {
 private:
-	int length;
-	int diametr;
+	double length;
+	double diametr;
 	bool inRepair;
 
 public:
 	Pipe();
-	int getLength() const;
-	int getDiametr() const;
+	double getLength() const;
+	double getDiametr() const;
 	bool getInRepair() const;
-	void setLength(int length);
-	void setDiametr(int diametr);
+	void setLength(double length);
+	void setDiametr(double diametr);
 	void setInRepair(bool inRepair);
 };
 

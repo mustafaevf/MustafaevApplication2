@@ -22,7 +22,7 @@ void Station::setCountActiveWorkshop(int countActiveWorkshop) {
 	this->countActiveWorkshop = countActiveWorkshop;
 }
 
-void Station::setEfficiency(int efficiency) {
+void Station::setEfficiency(double efficiency) {
 	this->efficiency = efficiency;
 }
 
@@ -38,6 +38,6 @@ int Station::getCountActiveWorkshop() const {
 	return this->countActiveWorkshop;
 }
 
-int Station::getEfficiency() const {
+double Station::getEfficiency() const {
 	return this->efficiency;
 }

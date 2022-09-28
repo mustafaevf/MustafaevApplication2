@@ -26,7 +26,7 @@ void clearMenu() {
 	system("cls");
 }
 
-void SaveToFile(string path, const Pipe& pipe, const Station& station) {
+void SaveToFile(string path, Pipe& pipe, Station& station) {
 	clearMenu();
 	ofstream fout;
 	fout.open(path + ".txt", ofstream::trunc);
@@ -42,7 +42,7 @@ void SaveToFile(string path, const Pipe& pipe, const Station& station) {
 			cout << "Файл " << path << ".txt" << " сохранен" << endl;
 		}
 		else {
-			cout << "Ошибка сохранения. Создайте все объекты" << endl;
+			cout << "Ошибка сохранения. Добавте все объекты" << endl;
 
 		}
 	}
@@ -58,49 +58,41 @@ void LoadFromFile(string path, Pipe& pipe, Station& station) {
 	ifstream fin;
 	fin.open(path + ".txt");
 	if (fin.is_open()) {
-		int ch;
+		float ch;
+		int i;
 		string name;
-
-		for (int i = 0; i <= 6; i++) {
-			if (i == 3)
-			{
-				fin >> name;
+		i = 0;
+		while (getline(fin, name))
+		{
+			if (i == 0) {
+				pipe.setLength(stod(name));
 			}
-			else {
-				fin >> ch;
+			if (i == 1) {
+				pipe.setDiametr(stod(name));
 			}
-
-			switch (i) {
-			case 0:
-				pipe.setLength(ch);
-				ch = 0;
-				break;
-			case 1:
-				pipe.setDiametr(ch);
-				ch = 0;
-				break;
-			case 2:
-				pipe.setInRepair(ch);
-				ch = 0;
-				break;
-			case 3:
+			if (i == 2) {
+				if (name == "1") {
+					pipe.setInRepair(1);
+				}
+				else {
+					pipe.setInRepair(0);
+				}
+			}
+			if (i == 3) {
 				station.setName(name);
-				break;
-			case 4:
-				station.setCountWorkshop(ch);
-				ch = 0;
-				break;
-			case 5:
-				station.setCountActiveWorkshop(ch);
-				ch = 0;
-				break;
-			case 6:
-				station.setEfficiency(ch);
-				ch = 0;
-				break;
 			}
-
+			if (i == 4) {
+				station.setCountWorkshop(stoi(name));
+			}
+			if (i == 5) {
+				station.setCountActiveWorkshop(stoi(name));
+			}
+			if (i == 6) {
+				station.setEfficiency(stod(name));
+			}
+			i++;
 		}
+		 
 		if (pipe.getLength() != 0 && pipe.getDiametr() != 0 && station.getName() != "" && station.getCountWorkshop() != 0 && station.getEfficiency() != 0) {
 			cout << "Файл загружен" << endl;
 		}
@@ -116,14 +108,14 @@ void LoadFromFile(string path, Pipe& pipe, Station& station) {
 	
 }
 
-void createPipe(Pipe& pipe, int length, int diametr, bool inRepair) {
+void createPipe(Pipe& pipe, double length, double diametr, bool inRepair) {
 	pipe.setLength(length);
 	pipe.setDiametr(diametr);
 	pipe.setInRepair(inRepair);
 
 }
 
-void createStation(Station& station, string name, int countWorkshop, int countActiveWorkshop, int efficiency) {
+void createStation(Station& station, string name, int countWorkshop, int countActiveWorkshop, double efficiency) {
 	station.setName(name);
 	station.setCountWorkshop(countWorkshop);
 	station.setCountActiveWorkshop(countActiveWorkshop);
@@ -133,7 +125,8 @@ void createStation(Station& station, string name, int countWorkshop, int countAc
 void InputStation(Station& station) {
 	clearMenu();
 	string name;
-	int countWorkshop, countActiveWorkshop, efficiency;
+	int countWorkshop, countActiveWorkshop;
+	double efficiency;
 	bool st_name = 0, st_countWorkshop = 0, st_countActiveWorkshop = 0, st_efficiency = 0;
 	while (true) {
 		if (st_name != 1) {
@@ -192,7 +185,7 @@ void InputStation(Station& station) {
 
 void InputPipe(Pipe& pipe) {
 	clearMenu();
-	int length, diametr;
+	double length, diametr;
 	bool inrepair;
 	bool st_length = 0, st_diametr = 0, st_inreapir = 0;
 	while (true) {
@@ -240,7 +233,10 @@ void InputPipe(Pipe& pipe) {
 
 void updateStation(Station& station) {
 	clearMenu();
-	if (station.getName() == "") return;
+	if (station.getName() == "") {
+		cout << "Станция не найдена" << endl;
+		return;
+	}	
 	int action;
 	cout << "Количество цехов: " << station.getCountWorkshop() << "\nРабочих цехов: " << station.getCountActiveWorkshop() << "\n0. Отключить\n1. Включить" << endl;
 	cout << "Выберите: ";
@@ -269,7 +265,6 @@ void updateStation(Station& station) {
 	}
 	else {
 		cout << "Повторите попытку" << endl;
-		updateStation(station);
 	}
 	
 	
@@ -277,7 +272,10 @@ void updateStation(Station& station) {
 
 void updatePipe(Pipe& pipe) {
 	clearMenu();
-	if (pipe.getLength() == 0) return;
+	if (pipe.getLength() == 0) {
+		cout << "Труба не найдена" << endl;
+		return;
+	}
 	int action;
 	cout << "Статус трубы: " << (pipe.getInRepair() ? "true" : "false") << "\n0. Отключить\n1. Включить" << endl;
 	cout << "Выберите: ";
