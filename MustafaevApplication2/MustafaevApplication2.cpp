@@ -58,7 +58,6 @@ void LoadFromFile(string path, Pipe& pipe, Station& station) {
 	ifstream fin;
 	fin.open(path + ".txt");
 	if (fin.is_open()) {
-		float ch;
 		int i;
 		string name;
 		i = 0;
@@ -261,10 +260,14 @@ void updatePipe(Pipe& pipe) {
 
 void printObjects(Pipe& pipe, Station& station) {
 	clearMenu();
-	if(pipe.getLength() != 0 && pipe.getDiametr() != 0)
-		cout << "Труба\nДлина: " << pipe.getLength() << "\nДиаметр: " << pipe.getDiametr() << "\n" << (pipe.getInRepair()? "В работе":"Не работает") << endl;
+	if (pipe.getLength() != 0 && pipe.getDiametr() != 0)
+		cout << "Труба\nДлина: " << pipe.getLength() << "\nДиаметр: " << pipe.getDiametr() << "\n" << (pipe.getInRepair() ? "В работе" : "Не работает") << endl;
+	else
+		cout << "Труба не найдена" << endl;
 	if (station.getName() != "" && station.getCountWorkshop() != 0 && station.getEfficiency() != 0)
 		cout << "Станция " << station.getName() << "\nКоличество цехов: " << station.getCountWorkshop() << "\nКоличество рабочих цехов: " << station.getCountActiveWorkshop() << "\nЭффективность: " << station.getEfficiency() << endl;
+	else
+		cout << "Станция не найдена" << endl;
 	
 }
 
