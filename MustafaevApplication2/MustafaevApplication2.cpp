@@ -8,7 +8,7 @@ using namespace std;
  
 void clearCin() {
 	cin.clear();
-	cin.ignore(123, '\n');
+	cin.ignore(123456, '\n');
 }
 
 void printMenu() {
@@ -127,111 +127,66 @@ void InputStation(Station& station) {
 	string name;
 	int countWorkshop, countActiveWorkshop;
 	double efficiency;
-	bool st_name = 0, st_countWorkshop = 0, st_countActiveWorkshop = 0, st_efficiency = 0;
-	while (true) {
-		if (st_name != 1) {
-			cout << "Введите название станции: ";
-			cin.ignore();
-			getline(cin, name);
-			if (name != "") {
-				st_name = 1;
-			}
-			else {
-				cout << "Попробуйте еще раз" << endl;
-				clearCin();
-			}
-		}
-		if (st_countWorkshop != 1 && st_name == 1) {
-			cout << "Введите количество цехов: ";
-			cin >> countWorkshop;
-			if (countWorkshop > 0 && !cin.fail()) {
-				st_countWorkshop = 1;
+	do {
+		clearCin();
+		cout << "Введите количество цехов: ";
+		cin >> countWorkshop;
+	} while (cin.fail() || countWorkshop <= 0);
 
-			}
-			else {
-				cout << "Количество должно быть больше 0" << endl;
-				clearCin();
-			}
-		}
-		if (st_countActiveWorkshop != 1 && st_countWorkshop == 1 && st_name == 1) {
-			cout << "Введите количество активных цехов: ";
-			cin >> countActiveWorkshop;
-			if (countActiveWorkshop > 0 && countActiveWorkshop <= countWorkshop && !cin.fail()) {
-				st_countActiveWorkshop = 1;
+	do {
+		clearCin();
+		cout << "Введите количество работающих цехов: ";
+		cin >> countActiveWorkshop;
 
-			}
-			else {
-				cout << "Количество должно быть больше 0 и меньше количетсва цехов" << endl;
-				clearCin();
-			}
-		}
-		if (st_efficiency != 1 && st_countWorkshop == 1 && st_countActiveWorkshop == 1 && st_name == 1) {
-			cout << "Введите эффективность: ";
-			cin >> efficiency;
-			if (efficiency > 0 && efficiency <= 100 && !cin.fail()) {
-				st_efficiency = 1;
-				clearMenu();
-				cout << "Станция добавлена" << endl;
-				createStation(station, name, countWorkshop, countActiveWorkshop, efficiency);
-				return;
-			}
-			else {
-				cout << "Эффективность > 0 и < 100" << endl;
-				clearCin();
-			}
-		}
-	}
+	} while (cin.fail() || countActiveWorkshop < 0 || countActiveWorkshop > countWorkshop);
+
+	do {
+		clearCin();
+		cout << "Введите показатель эффективности: ";
+		cin >> efficiency;
+	} while (cin.fail() || efficiency < 0 || efficiency > 100);
+
+	do {
+		cout << "Введите название станции: ";
+		cin.ignore();
+		getline(cin, name);
+		cin.clear();
+
+	} while (cin.fail());
+
+	createStation(station, name, countWorkshop, countActiveWorkshop, efficiency);
 }
 
 void InputPipe(Pipe& pipe) {
 	clearMenu();
 	double length, diametr;
 	bool inrepair;
-	bool st_length = 0, st_diametr = 0, st_inreapir = 0;
-	while (true) {
-		if (st_length != 1) {
-			cout << "Введите длину трубы: ";
-			cin >> length;
-			if (length > 0 && !cin.fail()) {
-				st_length = 1;
-				
-			}
-			else {
-				cout << "Длина должна быть больше 0" << endl;
-				clearCin();
-			}
-		}
-		if (st_diametr != 1 && st_length == 1) {
-			cout << "Введите диаметр трубы: ";
-			cin >> diametr;
-			if (diametr > 0 && !cin.fail()) {
-				st_diametr = 1;
-			}
-			else {
-				cout << "Диаметр должна быть больше 0" << endl;
-				clearCin();
-			}
-		}
-		if (st_inreapir != 1 && st_diametr == 1 && st_length == 1) {
-			cout << "В ремонте: ";
-			cin >> inrepair;
-			if (!cin.fail()) {
-				st_inreapir = 1;
-				createPipe(pipe, length, diametr, inrepair);
-				return;
-			}
-			else {
-				cout << "1 или 0" << endl;
-				clearCin();
-			}
-		}
-		
-	}
+	
+	do {
+		clearCin();
+		cout << "Введите длину трубы: ";
+		cin >> length;
+	} while (cin.fail() || length <= 0);
+
+	do {
+		clearCin();
+		cout << "Введите диаметр трубы: ";
+		cin >> diametr;
+	} while (cin.fail() || diametr <= 0);
+	
+	do {
+		clearCin();
+		cout << "В работе: ";
+		cin >> inrepair;
+	} while (cin.fail());
+
+	createPipe(pipe, length, diametr, inrepair);
 }
 
 
 
 void updateStation(Station& station) {
+	int countOn;
 	clearMenu();
 	if (station.getName() == "") {
 		cout << "Станция не найдена" << endl;
@@ -239,33 +194,33 @@ void updateStation(Station& station) {
 	}	
 	int action;
 	cout << "Количество цехов: " << station.getCountWorkshop() << "\nРабочих цехов: " << station.getCountActiveWorkshop() << "\n0. Отключить\n1. Включить" << endl;
-	cout << "Выберите: ";
+	cout << "Выберите действие: ";
 	cin >> action;
-	clearMenu();
-	if (action == 0)
-	{
-		if (station.getCountActiveWorkshop() > 0) {
-			station.setCountActiveWorkshop(station.getCountActiveWorkshop() - 1);
-			cout << "Цех отключен" << endl;
-			return;
-		}
-		else {
-			cout << "Все цеха выключены" << endl;
-		}
-	}
 	if (action == 1) {
-		if (station.getCountActiveWorkshop() < station.getCountWorkshop()) {
-			station.setCountActiveWorkshop(station.getCountActiveWorkshop() + 1);
-			cout << "Цех включен" << endl;
-			return;
+		cout << "Введите количество цехов для включения: ";
+		cin >> countOn;
+		if ((countOn <= station.getCountWorkshop() - station.getCountActiveWorkshop()) && countOn > 0) {
+			station.setCountActiveWorkshop(station.getCountActiveWorkshop() + countOn);
 		}
 		else {
-			cout << "Достигнуто максимальное количетсво цехов" << endl;
+			cout << "Ошибка" << endl;
+		}
+	} 
+	else if (action == 0) {
+		cout << "Введите количество цехов для выключения: ";
+		cin >> countOn;
+		if (countOn <= station.getCountActiveWorkshop() && countOn > 0) {
+			station.setCountActiveWorkshop(station.getCountActiveWorkshop() - countOn);
+		}
+		else {
+			cout << "Ошибка" << endl;
 		}
 	}
 	else {
-		cout << "Повторите попытку" << endl;
+		cout << "Попробуйте еще раз" << endl;
 	}
+	
+	
 	
 	
 }
@@ -307,8 +262,8 @@ void updatePipe(Pipe& pipe) {
 void printObjects(Pipe& pipe, Station& station) {
 	clearMenu();
 	if(pipe.getLength() != 0 && pipe.getDiametr() != 0)
-		cout << "Труба\nДлина: " << pipe.getLength() << "\nДиаметр: " << pipe.getDiametr() << "\nВ ремонте: " << (pipe.getInRepair()? "true":"false") << endl;
-	if (station.getName() != "" && station.getCountWorkshop() != 0 && station.getCountActiveWorkshop() != 0 && station.getEfficiency() != 0)
+		cout << "Труба\nДлина: " << pipe.getLength() << "\nДиаметр: " << pipe.getDiametr() << "\n" << (pipe.getInRepair()? "В работе":"Не работает") << endl;
+	if (station.getName() != "" && station.getCountWorkshop() != 0 && station.getEfficiency() != 0)
 		cout << "Станция " << station.getName() << "\nКоличество цехов: " << station.getCountWorkshop() << "\nКоличество рабочих цехов: " << station.getCountActiveWorkshop() << "\nЭффективность: " << station.getEfficiency() << endl;
 	
 }
