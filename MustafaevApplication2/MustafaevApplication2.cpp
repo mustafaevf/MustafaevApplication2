@@ -26,7 +26,7 @@ void clearMenu() {
 	system("cls");
 }
 
-void SaveToFile(string path, Pipe& pipe, Station& station) {
+void SaveToFile(string path, const Pipe& pipe, const Station& station) {
 	clearMenu();
 	ofstream fout;
 	fout.open(path + ".txt", ofstream::trunc);
@@ -149,9 +149,9 @@ void InputStation(Station& station) {
 		cout << "Введите название станции: ";
 		cin.ignore();
 		getline(cin, name);
-		cin.clear();
 
 	} while (cin.fail());
+	
 
 	createStation(station, name, countWorkshop, countActiveWorkshop, efficiency);
 }
@@ -232,7 +232,7 @@ void updatePipe(Pipe& pipe) {
 	}
 	int action;
 	cout << "Статус трубы: " << (pipe.getInRepair() ? "true" : "false") << "\n0. Отключить\n1. Включить" << endl;
-	cout << "Выберите: ";
+	cout << "Выберите действие: ";
 	cin >> action;
 	clearMenu();
 	if (action == 0) {
@@ -258,7 +258,7 @@ void updatePipe(Pipe& pipe) {
 	}
 }
 
-void printObjects(Pipe& pipe, Station& station) {
+void printObjects(const Pipe& pipe, const Station& station) {
 	clearMenu();
 	if (pipe.getLength() != 0 && pipe.getDiametr() != 0)
 		cout << "Труба\nДлина: " << pipe.getLength() << "\nДиаметр: " << pipe.getDiametr() << "\n" << (pipe.getInRepair() ? "В работе" : "Не работает") << endl;
