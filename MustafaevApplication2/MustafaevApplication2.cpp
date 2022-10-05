@@ -29,20 +29,30 @@ void clearMenu() {
 void SaveToFile(string path, const Pipe& pipe, const Station& station) {
 	clearMenu();
 	ofstream fout;
+	bool pipeEx = false, stationEx = false;
 	fout.open(path + ".txt", ofstream::trunc);
 	if (fout.is_open()) {
-		if (pipe.getLength() != 0 && station.getName() != "") {
+		if (pipe.getLength() != 0)
+			pipeEx = 1;
+		if (station.getName() != "")
+			stationEx = 1;
+		fout << pipeEx << endl;
+		fout << stationEx << endl;
+		if (pipe.getLength() != 0) {
 			fout << pipe.getLength() << endl;
 			fout << pipe.getDiametr() << endl;
 			fout << pipe.getInRepair() << endl;
+			cout << "Труба сохранена " << endl;
+		}
+		if (station.getName() != "") {
 			fout << station.getName() << endl;
 			fout << station.getCountWorkshop() << endl;
 			fout << station.getCountActiveWorkshop() << endl;
 			fout << station.getEfficiency() << endl;
-			cout << "Файл " << path << ".txt" << " сохранен" << endl;
+			cout << "Станция сохранена " << endl;
 		}
 		else {
-			cout << "Ошибка сохранения. Добавте все объекты" << endl;
+			cout << "Добавте все объекты" << endl;
 
 		}
 	}
@@ -56,44 +66,103 @@ void SaveToFile(string path, const Pipe& pipe, const Station& station) {
 void LoadFromFile(string path, Pipe& pipe, Station& station) {
 	clearMenu();
 	ifstream fin;
+	bool pipeEx = false, stationEx = false;
 	fin.open(path + ".txt");
 	if (fin.is_open()) {
 		int i;
 		string name;
-		i = 0;
-		while (getline(fin, name))
-		{
-			if (i == 0) {
-				pipe.setLength(stod(name));
-			}
-			if (i == 1) {
-				pipe.setDiametr(stod(name));
-			}
-			if (i == 2) {
-				if (name == "1") {
-					pipe.setInRepair(1);
+		
+		fin >> pipeEx;
+		fin >> stationEx;
+		if (pipeEx && stationEx) {
+			i = 0;
+			while (getline(fin, name))
+			{
+				if (i == 1) {
+					pipe.setLength(stod(name));
 				}
-				else {
-					pipe.setInRepair(0);
+				if (i == 2) {
+					pipe.setDiametr(stod(name));
 				}
+				if (i == 3) {
+					if (name == "1") {
+						pipe.setInRepair(1);
+					}
+					else {
+						pipe.setInRepair(0);
+					}
+
+				}
+				if (i == 4) {
+					station.setName(name);
+				}
+				if (i == 5) {
+					station.setCountWorkshop(stoi(name));
+				}
+				if (i == 6) {
+					station.setCountActiveWorkshop(stoi(name));
+				}
+				if (i == 7) {
+					station.setEfficiency(stod(name));
+				}
+				i++;
 			}
-			if (i == 3) {
-				station.setName(name);
-			}
-			if (i == 4) {
-				station.setCountWorkshop(stoi(name));
-			}
-			if (i == 5) {
-				station.setCountActiveWorkshop(stoi(name));
-			}
-			if (i == 6) {
-				station.setEfficiency(stod(name));
-			}
-			i++;
 		}
-		 
-		if (pipe.getLength() != 0 && pipe.getDiametr() != 0 && station.getName() != "" && station.getCountWorkshop() != 0 && station.getEfficiency() != 0) {
-			cout << "Файл загружен" << endl;
+		if (stationEx) {
+			i = 0;
+			while (getline(fin, name))
+			{
+
+				if (i == 1) {
+					station.setName(name);
+				}
+				if (i == 2) {
+					station.setCountWorkshop(stoi(name));
+				}
+				if (i == 3) {
+					station.setCountActiveWorkshop(stoi(name));
+				}
+				if (i == 4) {
+					station.setEfficiency(stod(name));
+				}
+				i++;
+			}
+			
+			
+		}
+		if (pipeEx) {
+			i = 0;
+			while (getline(fin, name))
+			{
+
+				if (i == 1) {
+					pipe.setLength(stod(name));
+				}
+				if (i == 2) {
+					pipe.setDiametr(stod(name));
+				}
+				if (i == 3) {
+					if (name == "1") {
+						pipe.setInRepair(1);
+					}
+					else {
+						pipe.setInRepair(0);
+					}
+
+				}
+				i++;
+			}
+
+
+		}
+		
+		
+			
+		if (pipe.getLength() != 0 && pipe.getDiametr() != 0) {
+			cout << "Труба загружена" << endl;
+		} 
+		if (station.getName() != "" && station.getCountWorkshop() != 0 && station.getEfficiency() != 0) {
+			cout << "Станция загружена" << endl;
 		}
 		else
 		{
@@ -105,20 +174,6 @@ void LoadFromFile(string path, Pipe& pipe, Station& station) {
 	}
 	fin.close();
 	
-}
-
-void createPipe(Pipe& pipe, double length, double diametr, bool inRepair) {
-	pipe.setLength(length);
-	pipe.setDiametr(diametr);
-	pipe.setInRepair(inRepair);
-
-}
-
-void createStation(Station& station, string name, int countWorkshop, int countActiveWorkshop, double efficiency) {
-	station.setName(name);
-	station.setCountWorkshop(countWorkshop);
-	station.setCountActiveWorkshop(countActiveWorkshop);
-	station.setEfficiency(efficiency);
 }
 
 void InputStation(Station& station) {
@@ -153,7 +208,10 @@ void InputStation(Station& station) {
 	} while (cin.fail());
 	
 
-	createStation(station, name, countWorkshop, countActiveWorkshop, efficiency);
+	station.setName(name);
+	station.setCountWorkshop(countWorkshop);
+	station.setCountActiveWorkshop(countActiveWorkshop);
+	station.setEfficiency(efficiency);
 }
 
 void InputPipe(Pipe& pipe) {
@@ -179,10 +237,10 @@ void InputPipe(Pipe& pipe) {
 		cin >> inrepair;
 	} while (cin.fail());
 
-	createPipe(pipe, length, diametr, inrepair);
+	pipe.setDiametr(diametr);
+	pipe.setLength(length);
+	pipe.setInRepair(inrepair);
 }
-
-
 
 void updateStation(Station& station) {
 	int countOn;
