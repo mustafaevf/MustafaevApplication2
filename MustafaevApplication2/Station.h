@@ -1,3 +1,5 @@
+#include <string>
+#include <iostream>
 
 class Station {
 private:
@@ -7,6 +9,7 @@ private:
 	double efficiency;
 
 public:
+	unsigned int id;
 	Station();
 	void setName(std::string name);
 	void setCountWorkshop(int countWorkshop);
@@ -15,5 +18,7 @@ public:
 	std::string getName() const;
 	int getCountWorkshop() const;
 	int getCountActiveWorkshop() const;
+	void saveFile(std::ofstream& fout);
 	double getEfficiency() const;
+	void updateWorkshop(int newCount);
 };

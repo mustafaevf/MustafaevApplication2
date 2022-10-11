@@ -1,5 +1,5 @@
 #include "Pipe.h"
-#include <iostream>
+#include <fstream>
 
 Pipe::Pipe()
 {
@@ -20,6 +20,16 @@ bool Pipe::getInRepair() const {
 	return this->inRepair;
 }
 
+void Pipe::setName(std::string name)
+{
+	this->name = name;
+}
+
+std::string Pipe::getName()
+{
+	return this->name;
+}
+
 void Pipe::setLength(double length) {
 	this->length = length;
 }
@@ -30,4 +40,19 @@ void Pipe::setDiametr(double diametr) {
 
 void Pipe::setInRepair(bool inRepair) {
 	this->inRepair = inRepair;
+}
+void Pipe::saveFile(std::ofstream& fout)
+{
+	fout << length;
+	fout << diametr;
+	fout << inRepair;
+}
+bool Pipe::check() {
+	if (this->length == 0) return false;
+	else return true;
+}
+
+void Pipe::updateInRepair()
+{
+	this->inRepair = !this->inRepair;
 }

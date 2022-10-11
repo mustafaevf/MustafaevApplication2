@@ -1,6 +1,7 @@
 #include <string>
 #include "Station.h"
-#include <iostream>
+#include <fstream>
+
 
 Station::Station()
 {
@@ -38,6 +39,19 @@ int Station::getCountActiveWorkshop() const {
 	return this->countActiveWorkshop;
 }
 
+void Station::saveFile(std::ofstream& fout)
+{
+	fout << name;
+	fout << countWorkshop;
+	fout << countActiveWorkshop;
+	fout << efficiency;
+}
+
 double Station::getEfficiency() const {
 	return this->efficiency;
+}
+
+void Station::updateWorkshop(int newCount)
+{
+	this->countActiveWorkshop = countActiveWorkshop + newCount;
 }
