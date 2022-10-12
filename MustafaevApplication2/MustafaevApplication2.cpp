@@ -3,43 +3,27 @@
 #include "Pipe.h"
 #include "Station.h"
 #include <vector>
-#include "File.h"
+#include <fstream>
 #include "Utils.h"
 
 
 using namespace std;
  
-static int id = 0;
+static int id = 1;
 
 
-void SaveToFile(string path, const Pipe& pipe, const Station& station) {
+void SaveToFile(string path, vector<Pipe>& pipes, vector<Station>& stations) {
 	ofstream fout;
-	bool pipeEx = false, stationEx = false;
 	fout.open(path + ".txt", ofstream::trunc);
 	if (fout.is_open()) {
-		if (pipe.getLength() != 0)
-			pipeEx = 1;
-		if (station.getName() != "")
-			stationEx = 1;
-		fout << pipeEx << endl;
-		fout << stationEx << endl;
-		if (pipe.getLength() != 0) {
-			fout << pipe.getLength() << endl;
-			fout << pipe.getDiametr() << endl;
-			fout << pipe.getInRepair() << endl;
-			cout << "Труба сохранена " << endl;
-		}
-		if (station.getName() != "") {
-			fout << station.getName() << endl;
-			fout << station.getCountWorkshop() << endl;
-			fout << station.getCountActiveWorkshop() << endl;
-			fout << station.getEfficiency() << endl;
-			cout << "Станция сохранена " << endl;
-		}
-		else {
-			cout << "Добавте все объекты" << endl;
+		fout << pipes.size() << endl;
+		fout << stations.size() << endl;
 
-		}
+		/*if (pipes.size() != 0) {
+			for (int k = 0; k < pipes.size(); k++) {
+
+			}
+		}*/
 	}
 	else {
 		cout << "Ошибка открытия файла" << endl;
@@ -131,7 +115,76 @@ void LoadFromFile(string path, Pipe& pipe, Station& station) {
 }
 
 
-void InputStation(Station& station, vector<Station>& stations) {
+bool CheckPipeInPipes(vector<Pipe>& pipes, int id) {
+	
+	for (int i = 0; i < pipes.size(); i++) {
+		if (id == pipes[i].id) {
+			return true;
+		}
+	}
+}
+
+bool CheckStationInStations(vector<Station>& stations, int id) {
+	for (int i = 0; i < stations.size(); i++) {
+		if (id == stations[i].id) {
+			return true;
+		}
+	}
+}
+
+bool CheckStations(vector<Station>& stations) {
+	if (stations.size() == 0) {
+		return false;
+	}
+}
+
+bool CheckPipes(vector<Pipe>& pipes) {
+	if (pipes.size() == 0) {
+		return false;
+	}
+}
+
+void DeleteStation(vector<Station>& stations, int id) {
+	stations.erase(stations.begin() + id - 1);
+}
+
+void DeletePipe(vector<Pipe>& pipes, int id) {
+	pipes.erase(pipes.begin() + id - 1);
+}
+
+
+void PrintStations(vector<Station>& stations) { // вывод всех станций
+	if (!CheckStations(stations)) {
+		cout << "Станций не найдена" << endl;
+		return;
+	}
+
+	for (int i = 0; i < stations.size(); i++) {
+		cout << "Станция (" << stations[i].id << ")" << endl;
+		cout << "Название: " << stations[i].getName() << endl;
+		cout << "Цехов: " << stations[i].getCountWorkshop() << endl;
+		cout << "Рабочих цехов: " << stations[i].getCountActiveWorkshop() << endl;
+		cout << "Эффективность: " << stations[i].getEfficiency() << endl;
+	}
+} 
+
+void PrintPipes(vector<Pipe>& pipes) { // вывод всех труб
+	if (!CheckPipes(pipes)) {
+		cout << "Трубы не найдены" << endl;
+		return;
+	}
+
+	for (int i = 0; i < pipes.size(); i++) {
+		cout << "Труба (" << pipes[i].id << ")" << endl;
+		cout << "Название: " << pipes[i].getName() << endl;
+		cout << "Длина: " << pipes[i].getLength() << endl;
+		cout << "Диаметр: " << pipes[i].getDiametr() << endl;
+		cout << "В ремонте: " << pipes[i].getInRepair() << endl;
+	}
+} 
+
+
+void InputCreateStation(vector<Station>& stations, Station& station) {
 	string name;
 	int countWorkshop, countActiveWorkshop;
 	double efficiency; 
@@ -155,13 +208,13 @@ void InputStation(Station& station, vector<Station>& stations) {
 	stations.push_back(station);
 }
 
-void InputPipe(Pipe& pipe, vector<Pipe>& pipes) {
+void InputCreatePipe(vector<Pipe>& pipes, Pipe& pipe) {
 	double length, diametr;
 	bool inrepair;
 	string name;
 	
-	length = getInt("Введите длину: ", 0, 1000);
-	diametr = getInt("Введите диаметр: ", 0, 1000);
+	length = getInt("Введите длину: (м) ", 0, 1000);
+	diametr = getInt("Введите диаметр: (мм) ", 0, 1000);
 	inrepair = getInt("В работе: ", 0, 1);
 
 	do {
@@ -179,67 +232,6 @@ void InputPipe(Pipe& pipe, vector<Pipe>& pipes) {
 	pipes.push_back(pipe);
 }
 
-void updateStation(Station& station) {
-	int countOn;
-	if (station.getName() == "") {
-		cout << "Станция не найдена" << endl;
-		return;
-	}	
-	int action;
-	cout << "Количество цехов: " << station.getCountWorkshop() << "\nРабочих цехов: " << station.getCountActiveWorkshop() << "\n0. Отключить\n1. Включить" << endl;
-	cout << "Выберите действие: ";
-	cin >> action;
-	if (action == 1) {
-		cout << "Введите количество цехов для включения: ";
-		cin >> countOn;
-		if ((countOn <= station.getCountWorkshop() - station.getCountActiveWorkshop()) && countOn > 0) {
-			station.setCountActiveWorkshop(station.getCountActiveWorkshop() + countOn);
-		}
-		else {
-			cout << "Ошибка" << endl;
-		}
-	} 
-	else if (action == 0) {
-		cout << "Введите количество цехов для выключения: ";
-		cin >> countOn;
-		if (countOn <= station.getCountActiveWorkshop() && countOn > 0) {
-			station.setCountActiveWorkshop(station.getCountActiveWorkshop() - countOn);
-		}
-		else {
-			cout << "Ошибка" << endl;
-		}
-	}
-	else {
-		cout << "Попробуйте еще раз" << endl;
-	}	
-}
-
-void PrintObjects(vector<Station>& stations, vector<Pipe>& pipes) {
-	if (pipes.size() != 0) {
-		for (int i = 0; i < pipes.size(); i++) {
-			cout << "Труба (" << pipes[i].id << ")" << endl;
-			cout << "Название: " << pipes[i].getName() << endl;
-			cout << "Длина: " << pipes[i].getLength() << endl;
-			cout << "Диаметр: " << pipes[i].getDiametr() << endl;
-			cout << "В ремонте: " << pipes[i].getInRepair() << endl;
-		}
-	}
-	else {
-		cout << "Трубы не найдены" << endl;
-	}
-	if (stations.size() != 0) {
-		for (int i = 0; i < stations.size(); i++) {
-			cout << "Станция (" << stations[i].id << ")" << endl;
-			cout << "Название: " << stations[i].getName() << endl;
-			cout << "Цехов: " << stations[i].getCountWorkshop() << endl;
-			cout << "Рабочих цехов: " << stations[i].getCountActiveWorkshop() << endl;
-			cout << "Эффективность: " << stations[i].getEfficiency() << endl;
-		}
-	}
-	else {
-		cout << "Станции не найдены" << endl;
-	}
-}
 
 void PrintStation(vector<Station>& stations, int id) {
 	if (stations.size() != 0) {
@@ -261,97 +253,160 @@ void PrintPipe(vector<Pipe>& pipes, int id) {
 		for (int i = 0; i < pipes.size(); i++) {
 			if (id == pipes[i].id) {
 				cout << "Труба (" << pipes[i].id << ")" << endl;
+				cout << "Название: " << pipes[i].getName() << endl;
 				cout << "Длина: " << pipes[i].getLength() << endl;
 				cout << "Диаметр: " << pipes[i].getDiametr() << endl;
-				cout << "В ремонте: " << pipes[i].getInRepair() << endl;
+				cout << "В работе: " << pipes[i].getInRepair() << endl;
 			}
+		}
+	}
+}
+
+
+void InputUpdatePipes(vector<Pipe>& pipes) {
+	if (!CheckPipes(pipes)) {
+		cout << "Добавте трубы" << endl;
+		return;
+	}
+	cout << "1) Выбрать трубы для отправки в ремонт" << endl;
+	cout << "2) Выбрать трубы для починки" << endl;
+
+	int i;
+
+	i = getInt("Выберите: ", 1, 2);
+
+	if (i == 1) {
+		cout << "Введите 0 для выхода" << endl;
+		while (1) {
+			int pipeId;
+			pipeId = getInt("Введите id трубы: ", 0, 100);
+			if (pipeId == 0) {
+				break;
+			}
+			for (int k = 0; k < pipes.size(); k++) {
+				if (pipes[k].id == pipeId) {
+					if (pipes[k].getInRepair() == 1) {
+						cout << "Успешно. Труба отправлена в ремонт" << endl;
+						pipes[k].updateInRepair();
+					}
+					else {
+						cout << "Ошибка. Труба уже в ремонте" << endl;
+					}
+					
+				}
+				else {
+					cout << "Ошибка. Труба не найдена" << endl;
+				}
+			}
+		}
+	}
+
+	if (i == 2) {
+		cout << "Введите 0 для выхода" << endl;
+		while (1) {
+			int pipeId;
+			pipeId = getInt("Введите id трубы: ", 0, 100);
+			if (pipeId == 0) {
+				break;
+			}
+			for (int k = 0; k < pipes.size(); k++) {
+				if (pipes[k].id == pipeId) {
+					if (pipes[k].getInRepair() == 0) {
+						cout << "Успешно. Труба в работе" << endl;
+						pipes[k].updateInRepair();
+					}
+					else {
+						cout << "Ошибка. Труба уже работает" << endl;
+					}
+
+				}
+				else {
+					cout << "Ошибка. Труба не найдена" << endl;
+				}
+			}
+		}
+	}
+	
+}
+
+void InputUpdateStations(vector<Station>& stations) {
+	if (!CheckStations(stations)) {
+		cout << "Станции не найдены" << endl;
+		return;
+	}
+	int stationId;
+	stationId = getInt("Введите id станции: ", 1, id);
+	for (int k = 0; k < stations.size(); k++) {
+		if (stations[k].id == stationId) {
+			PrintStation(stations, stationId);
+			int activeWorkshop;
+			activeWorkshop = getInt("Введите количество рабочих цехов: ", 0, stations[k].getCountWorkshop());
+			stations[k].setCountActiveWorkshop(activeWorkshop);
+			cout << "Успешно. Данные по станции обновлены" << endl;
+		}
+		else {
+			cout << "Станция не найдена" << endl;
 		}
 	}
 }
 
 
 void InputFilterPipes(vector<Pipe>& pipes) {
-	int query;
-	bool params;
-	string name;
-	cout << "1. По признаку в ремонте\n2. По названию" << endl;
-	query = getInt("Выберите по какому параметру фильтровать: ", 1, 2);
-	vector<int> findedPipes;
-	if (query == 2) {
-		cout << "Введите название трубы: ";
+	cout << "Выберите фильтр для поиска труб" << endl;
+	cout << "1) По названию" << endl;
+	cout << "2) По признаку в ремонте" << endl;
+	int i;
+	i = getInt("Выберите фильтр: ", 1, 2);
+	if (i == 1) {
+		cout << "Введите название трубы: " << endl;
+		string name;
 		cin.ignore();
 		getline(cin, name);
-		findedPipes = searchByFilterPipe(pipes, name);
-	}
-	else {
-		params = getInt("Введите параметр поиска: ", 0, 1);
-		findedPipes = searchByFilterPipe(pipes, params);
-	}
-
-	if (findedPipes.size() != 0) {
-		for (int i = 0; i < findedPipes.size(); i++) {
-			cout << "Труба (" << findedPipes[i] << ")\nНазвание: " << pipes[findedPipes[i]].getName() << "\nДлина: " << pipes[findedPipes[i]].getLength() << "\nДиаметр: " << pipes[findedPipes[i]].getDiametr() << "\nВ ремонте: " << pipes[findedPipes[i]].getInRepair() << endl;
+		vector<int> find = searchByFilterPipe(pipes, name);
+		if (find.size() == 0) {
+			cout << "Трубы не найдены" << endl;
+			return;
+		}
+		for (int k = 0; k < find.size(); k++) {
+			PrintPipe(pipes, find[k]);
 		}
 	}
-	else {
-		cout << "Объекты не найдены" << endl;
+	if (i == 2) {
+		cout << "В ремонте или нет" << endl;
+		bool status;
+		status = getInt("Введит 0 или 1: ", 0, 1);
+		vector<int> find = searchByFilterPipe(pipes, status);
+		if (find.size() == 0) {
+			cout << "Трубы не найдены" << endl;
+			return;
+		}
+		for (int k = 0; k < find.size(); k++) {
+			PrintPipe(pipes, find[k]);
+		}
 	}
-	
 }
 
 void InputFilterStations(vector<Station>& stations) {
-	int query;
-	bool params;
-	string name;
-	cout << "1. По проценту незадействованных\n2. По названию" << endl;
-	query = getInt("Выберите по какому параметру фильтровать: ", 1, 2);
-	vector<int> findedStations;
-	if (query == 2) {
-		cout << "Введите название станции: ";
+	cout << "Выберите фильтр для поиска станций" << endl;
+	cout << "1) По названию" << endl;
+	int i;
+	i = getInt("Выберите фильтр: ", 1, 1);
+	if (i == 1) {
+		cout << "Введите название станции: " << endl;
+		string name;
 		cin.ignore();
 		getline(cin, name);
-		findedStations = searchByFilterStation(stations, name);
-	}
-	else {
-		params = getInt("Введите процент поиска: ", 0, 100);
-		findedStations = searchByFilterStation(stations, params);
-	}
-
-	if (findedStations.size() != 0) {
-		for (int i = 0; i < findedStations.size(); i++) {
-			cout << "Станция (" << findedStations[i] << ")\nНазвание: " << stations[findedStations[i]].getName() << "\nЦехов: " << stations[findedStations[i]].getCountWorkshop() << "\nРабочих цехов: " << stations[findedStations[i]].getCountActiveWorkshop() << "\nЭффективность: " << stations[findedStations[i]].getEfficiency() << endl;
+		vector<int> find = searchByFilterStation(stations, name);
+		if (find.size() == 0) {
+			cout << "Станции не найдены" << endl;
+			return;
 		}
-	}
-	else {
-		cout << "Объекты не найдены" << endl;
+		for (int k = 0; k < find.size(); k++) {
+			PrintStation(stations, find[k]);
+		}
 	}
 }
 
-
-void InputUpdatePipes(vector<Pipe>& pipes) {
-	cout << "Редактирование труб" << endl;
-	cout << "1. Редактировать трубу по id" << endl;
-	cout << "2. Редактировать множество труб" << endl;
-	int select;
-	select = getInt("Введите пункт меню: ", 1, 2);
-	ClearMenu();
-	if (select == 1) {
-		int pipeId;
-		pipeId = getInt("Введите id трубы: ", 0, 1000);
-		ClearMenu();
-		for (int i = 0; i < pipes.size(); i++) {
-			if (pipes[i].id == pipeId) {
-				cout << "Труба (" << pipeId << ")\nНазвание: " << pipes[i].getName() << "\nДлина: " << pipes[i].getLength() << "\nДиаметр : " << pipes[i].getDiametr() << "\nВ ремонте : " << pipes[i].getInRepair() << endl;
-				cout << "Статус трубы изменен" << endl;
-				pipes[i].updateInRepair();
-			}
-		}
-	}
-
-	if (select == 2) {
-		InputFilterPipes(pipes);
-	}
-}
 
 int main() {
 	setlocale(LC_ALL, "");
@@ -363,91 +418,95 @@ int main() {
 	while (1)
 	{
 		PrintMenu();
-		menu = getInt("Введите пункт меню: ", 0, 8);
-		if (cin.fail()) {
-			clearCin();
+		menu = getInt("Введите пункт меню: ", 0, 11);
+		switch (menu)
+		{
+		case 0:
+			return 0;
+			break;
+		case 1:
+			ClearMenu();
+			InputCreatePipe(pipes, pipe);
+			break;
+		case 2:
+			ClearMenu();
+			InputCreateStation(stations, station);
+			break;
+		case 3:
+		{
+			ClearMenu();
+			PrintPipes(pipes);
+			PrintStations(stations);
+			break;
 		}
-		else {
+		case 4:
+			ClearMenu();
+			InputUpdatePipes(pipes);
+			break;
+		case 5:
+			ClearMenu();
+			InputUpdateStations(stations);
+			break;
+		case 6:
+		{
+			cout << "Введите название файла для сохранения: ";
+			string path;
+			cin >> path;
+			SaveToFile(path, pipes, stations);
+			break;
+		}
+		case 7:
+		{
+			string path;
+			cout << "Введите название файла для загрузки: ";
+			cin >> path;
+			LoadFromFile(path, pipe, station);
+			break;
+		}
+		case 8:
+		{
+			ClearMenu();
+			InputFilterPipes(pipes);
+			break;
+		}
 
-			switch (menu)
-			{
-			case 0:
-				return 0;
-				break;
-			case 1:
-				ClearMenu();
-				InputPipe(pipe, pipes);
-				break;
-			case 2:
-				ClearMenu();
-				InputStation(station, stations);
-				break;
-			case 3:
-			{
-				ClearMenu();
-				int point;
-				cout << "1. Показать трубу по id\n2. Показать станцию по id\n3. Показать все объекты" << endl;
-				cout << "Выберите: ";
-				cin >> point;
-				if (point == 1) {
-					int pipe_id;
-					cout << "Введите id трубы: ";
-					cin >> pipe_id;
-					PrintPipe(pipes, pipe_id);
-				}
-				if (point == 2) {
-					int station_id;
-					cout << "Введите id станции: ";
-					cin >> station_id;
-					PrintStation(stations, station_id);
-				}
-				if (point == 3) {
-					ClearMenu();
-					PrintObjects(stations, pipes);
-				}
+		case 9:
+		{
+			
+			ClearMenu();
+			InputFilterStations(stations);
+			break;
+		}
 
+		case 10:
+		{
+			ClearMenu();
+			cout << "Удаление трубы" << endl;
+			int pipeId;
+			pipeId = getInt("Введите id трубы: ", 1, id);
+			if (!CheckPipeInPipes(pipes, pipeId)) {
+				cout << "Труба не найдена" << endl;
 				break;
 			}
-			case 4:
-				ClearMenu();
-				InputUpdatePipes(pipes);
-				break;
-			case 5:
-				updateStation(station);
-				break;
-			case 6:
-			{
-				cout << "Введите название файла для сохранения: ";
-				string path;
-				cin >> path;
-				SaveToFile(path, pipe, station);
+			DeletePipe(pipes, pipeId);
+			break;
+		}
+		case 11:
+		{
+			ClearMenu();
+			cout << "Удаление станции" << endl;
+			int stationId;
+			stationId = getInt("Введите id станции: ", 1, id);
+			if (!CheckStationInStations(stations, stationId)) {
+				cout << "Станция не найдена" << endl;
 				break;
 			}
-			case 7:
-			{
-				string path;
-				cout << "Введите название файла для загрузки: ";
-				cin >> path;
-				LoadFromFile(path, pipe, station);
-				break;
-			}
-			case 8:
-			{
-				ClearMenu();
-				int select;
-				cout << "1. Поиск труб по фильтру" << endl;
-				cout << "2. Поиск станций по фильтру" << endl;
-				select = getInt("Выберите: ", 1, 2);
-				if (select == 1) {
-					InputFilterPipes(pipes);
-				}
-				else {
-					InputFilterStations(stations);
-				}
-			}
-			default:
-				break;
-			}
+			DeleteStation(stations, stationId);
+			break;
+		}
+
+		default:
+			break;
 		}
 	}
 	return 1;

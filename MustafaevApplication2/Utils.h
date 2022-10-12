@@ -11,7 +11,10 @@ void PrintMenu() {
 	std::cout << "5. Редактировать станции" << std::endl;
 	std::cout << "6. Сохранить" << std::endl;
 	std::cout << "7. Загрузить" << std::endl;
-	std::cout << "8. Поиск по фильтру" << std::endl;
+	std::cout << "8. Поиск трубы" << std::endl;
+	std::cout << "9. Поиск станции" << std::endl;
+	std::cout << "10. Удалить трубу" << std::endl;
+	std::cout << "11. Удалить станцию" << std::endl;
 	std::cout << "0. Выйти" << std::endl;
 }
 
