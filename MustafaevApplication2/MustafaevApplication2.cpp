@@ -39,28 +39,16 @@ void LoadFromFile(string path, Pipe& pipe, Station& station) {
 	if (fin.is_open()) {
 		fin >> pipeEx;
 		fin >> stationEx;
-		if (pipeEx && stationEx) {
-			string name;
+		if (pipeEx) {
 			double length, diametr;
-			int countWorkshop, countActiveWorkshop;
-			double efficiency;
 			bool inRepair;
 			fin >> length;
 			fin >> diametr;
 			fin >> inRepair;
-			fin >> ws;
-			getline(fin, name);
-			fin >> countWorkshop;
-			fin >> countActiveWorkshop;
-			fin >> efficiency;
 
 			pipe.setLength(length);
 			pipe.setDiametr(diametr);
 			pipe.setInRepair(inRepair);
-			station.setName(name);
-			station.setCountWorkshop(countWorkshop);
-			station.setCountActiveWorkshop(countActiveWorkshop);
-			station.setEfficiency(efficiency);
 
 		}
 		if (stationEx) {
@@ -81,18 +69,7 @@ void LoadFromFile(string path, Pipe& pipe, Station& station) {
 
 
 		}
-		if (pipeEx) {
-			double length, diametr;
-			bool inRepair;
-			fin >> length;
-			fin >> diametr;
-			fin >> inRepair;
-
-			pipe.setLength(length);
-			pipe.setDiametr(diametr);
-			pipe.setInRepair(inRepair);
-
-		}
+		
 
 
 
