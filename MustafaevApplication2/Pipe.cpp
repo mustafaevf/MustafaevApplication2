@@ -20,16 +20,6 @@ bool Pipe::getInRepair() const {
 	return this->inRepair;
 }
 
-void Pipe::setName(std::string name)
-{
-	this->name = name;
-}
-
-std::string Pipe::getName()
-{
-	return this->name;
-}
-
 void Pipe::setLength(double length) {
 	this->length = length;
 }

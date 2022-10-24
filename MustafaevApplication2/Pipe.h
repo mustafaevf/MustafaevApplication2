@@ -7,7 +7,6 @@ private:
 	double length;
 	double diametr;
 	bool inRepair;
-	std::string name;
 
 public:
 	unsigned int id;
@@ -15,8 +14,6 @@ public:
 	double getLength() const;
 	double getDiametr() const;
 	bool getInRepair() const;
-	void setName(std::string name);
-	std::string getName();
 	void setLength(double length);
 	void setDiametr(double diametr);
 	void setInRepair(bool inRepair);

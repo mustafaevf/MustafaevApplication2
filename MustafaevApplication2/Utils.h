@@ -11,7 +11,10 @@ void PrintMenu() {
 	std::cout << "5. Редактировать станции" << std::endl;
 	std::cout << "6. Сохранить" << std::endl;
 	std::cout << "7. Загрузить" << std::endl;
-	std::cout << "8. Поиск по фильтру" << std::endl;
+	std::cout << "8. Найти трубу" << std::endl;
+	std::cout << "9. Найти кс" << std::endl;
+	std::cout << "10. Удалить трубу" << std::endl;
+	std::cout << "11. Удалить кс" << std::endl;
 	std::cout << "0. Выйти" << std::endl;
 }
 
@@ -45,16 +48,16 @@ T getInt(std::string text, T a, T b) {
 
 }
 
-vector<int> searchByFilterPipe(vector<Pipe>& pipes, string name) {
-	vector<int> findedPipes;
-	for (int i = 0; i < pipes.size(); i++) {
-		if (pipes[i].getName() == name) {
-			findedPipes.push_back(pipes[i].id);
-		}
-	}
-
-	return findedPipes;
-}
+//vector<int> searchByFilterPipe(vector<Pipe>& pipes, string name) {
+//	vector<int> findedPipes;
+//	for (int i = 0; i < pipes.size(); i++) {
+//		if (pipes[i].getName() == name) {
+//			findedPipes.push_back(pipes[i].id);
+//		}
+//	}
+//
+//	return findedPipes;
+//}
 
 template <typename T>
 vector<int> searchByFilterPipe(vector<Pipe>& pipes, T& params) {
