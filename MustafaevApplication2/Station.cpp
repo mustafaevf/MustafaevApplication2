@@ -1,57 +1,56 @@
-#include <string>
 #include "Station.h"
-#include <fstream>
+
+unsigned int Station::IDcs = 0;
 
 
-Station::Station()
+int Station::getId() const
 {
-	setName("");
-	setCountWorkshop(0);
-	setCountActiveWorkshop(0);
-	setEfficiency(0);
+	return this->id;
 }
 
-void Station::setName(std::string name) {
-	this->name = name;
-}
-
-void Station::setCountWorkshop(int countWorkshop) {
-	this->countWorkshop = countWorkshop;
-}
-
-void Station::setCountActiveWorkshop(int countActiveWorkshop) {
-	this->countActiveWorkshop = countActiveWorkshop;
-}
-
-void Station::setEfficiency(double efficiency) {
-	this->efficiency = efficiency;
-}
-
-std::string Station::getName() const {
+std::string Station::getName() const
+{
 	return this->name;
 }
 
-int Station::getCountWorkshop() const {
+int Station::getCountWorkshop() const
+{
 	return this->countWorkshop;
 }
 
-int Station::getCountActiveWorkshop() const {
+int Station::getCountActiveWorkshop() const
+{
 	return this->countActiveWorkshop;
 }
 
-void Station::saveFile(std::ofstream& fout)
+double Station::getEfficiency() const
 {
-	fout << name;
-	fout << countWorkshop;
-	fout << countActiveWorkshop;
-	fout << efficiency;
-}
-
-double Station::getEfficiency() const {
 	return this->efficiency;
 }
 
-void Station::updateWorkshop(int newCount)
+void Station::setName(std::string name)
 {
-	this->countActiveWorkshop = countActiveWorkshop + newCount;
+	this->name = name;
 }
+
+
+void Station::setCountWorkshop(int countWorkshop)
+{
+	this->countWorkshop = countWorkshop;
+}
+
+void Station::setCountActiveWorkshop(int countActiveWorkshop)
+{
+	this->countActiveWorkshop = countActiveWorkshop;
+}
+
+void Station::setEfficiency(double efficiency)
+{
+	this->efficiency = efficiency;
+}
+
+void Station::setId(int id)
+{
+	this->id = id;
+}
+

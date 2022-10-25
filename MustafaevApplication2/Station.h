@@ -1,24 +1,25 @@
+#pragma once
 #include <string>
-#include <iostream>
 
 class Station {
+	
 private:
+	unsigned int id;
 	std::string name;
 	int countWorkshop;
 	int countActiveWorkshop;
 	double efficiency;
 
 public:
-	unsigned int id;
-	Station();
+	static unsigned int IDcs;
+	int getId() const;
+	std::string getName() const;
+	int getCountWorkshop() const;
+	int getCountActiveWorkshop() const;
+	double getEfficiency() const;
 	void setName(std::string name);
 	void setCountWorkshop(int countWorkshop);
 	void setCountActiveWorkshop(int countActiveWorkshop);
 	void setEfficiency(double efficiency);
-	std::string getName() const;
-	int getCountWorkshop() const;
-	int getCountActiveWorkshop() const;
-	void saveFile(std::ofstream& fout);
-	double getEfficiency() const;
-	void updateWorkshop(int newCount);
+	void setId(int id);
 };
