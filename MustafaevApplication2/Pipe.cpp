@@ -1,58 +1,47 @@
 #include "Pipe.h"
-#include <fstream>
+#include "Utils.h"
 
-Pipe::Pipe()
+unsigned int Pipe::IDp = 0;
+
+int Pipe::getId() const
 {
-	this->diametr = 0.0;
-	this->length = 0;
-	this->inRepair = 0;
+	return this->id;
 }
 
-double Pipe::getLength() const {
+double Pipe::getLength() const
+{
 	return this->length;
 }
 
-double Pipe::getDiametr() const {
+bool Pipe::getRepair() const
+{
+	return this->repair;
+}
+
+double Pipe::getDiametr() const
+{
 	return this->diametr;
 }
 
-bool Pipe::getInRepair() const {
-	return this->inRepair;
-}
-
-void Pipe::setName(std::string name)
+void Pipe::setLength(double length)
 {
-	this->name = name;
-}
-
-std::string Pipe::getName()
-{
-	return this->name;
-}
-
-void Pipe::setLength(double length) {
 	this->length = length;
 }
 
-void Pipe::setDiametr(double diametr) {
+void Pipe::setDiametr(double diametr)
+{
 	this->diametr = diametr;
 }
 
-void Pipe::setInRepair(bool inRepair) {
-	this->inRepair = inRepair;
-}
-void Pipe::saveFile(std::ofstream& fout)
+void Pipe::setRepair(bool repair)
 {
-	fout << length;
-	fout << diametr;
-	fout << inRepair;
-}
-bool Pipe::check() {
-	if (this->length == 0) return false;
-	else return true;
+	this->repair = repair;
 }
 
-void Pipe::updateInRepair()
+void Pipe::setId(int id)
 {
-	this->inRepair = !this->inRepair;
+	this->id = id;
+}
+void Pipe::updateRepair() {
+	this->repair = !this->repair;
 }

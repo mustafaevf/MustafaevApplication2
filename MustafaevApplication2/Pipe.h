@@ -1,27 +1,19 @@
-#include <string>
-#include <iostream>
-
+#pragma once
 class Pipe {
 private:
-	
+	unsigned int id;
 	double length;
 	double diametr;
-	bool inRepair;
-	std::string name;
-
+	bool repair;
 public:
-	unsigned int id;
-	Pipe();
+	static unsigned int IDp;
+	int getId() const;
 	double getLength() const;
+	bool getRepair() const;
 	double getDiametr() const;
-	bool getInRepair() const;
-	void setName(std::string name);
-	std::string getName();
 	void setLength(double length);
 	void setDiametr(double diametr);
-	void setInRepair(bool inRepair);
-	void saveFile(std::ofstream& fout);
-	bool check();
-	void updateInRepair();
+	void setRepair(bool repair);
+	void setId(int id);
+	void updateRepair();
 };
-
