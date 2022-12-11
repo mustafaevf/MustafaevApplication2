@@ -127,11 +127,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="File.cpp" />
+    <ClCompile Include="GasTransportation.cpp" />
     <ClCompile Include="MustafaevApplication2.cpp" />
     <ClCompile Include="Pipe.cpp" />
     <ClCompile Include="Station.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="File.h" />
+    <ClInclude Include="GasTransportation.h" />
     <ClInclude Include="Pipe.h" />
     <ClInclude Include="Station.h" />
     <ClInclude Include="Utils.h" />

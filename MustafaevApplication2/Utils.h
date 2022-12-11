@@ -2,8 +2,20 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <string>
 #include "Pipe.h"
 #include "Station.h"
+
+
+void PrintMenu();
+bool FilterGetByNamePipe(Pipe& pipe, std::string name);
+bool FilterGetByNameStation(Station& station, std::string name);
+bool FilterGetByDiametrPipe(Pipe& pipe, double diametr);
+bool FilterGetByRepairPipe(Pipe& pipe, bool repair);
+
+bool FilterGetByEfficiencyStation(Station& station, double efficiency);
+std::string getText(std::string message);
+
 
 template <typename T>
 T getNumber(std::string text, T borderMin, T borderMax) {
@@ -22,45 +34,38 @@ T getNumber(std::string text, T borderMin, T borderMax) {
 	}
 }
 
+
+
+
 template <typename T>
-std::vector<int> SearchPipesByFilter(std::map<int, Pipe>& Pipes, int param_search, T parametr)
+using FilterPipe = bool(*)(Pipe& t, T parametr);
+template <typename T>
+std::vector<int> SearchByFilterPipe(std::map<int, Pipe>& t, FilterPipe<T> f, T parametr)
 {
 	std::vector<int> result;
-	for (auto& pipe : Pipes)
+	for (auto& o : t)
 	{
-		if (param_search == 1) {
-			if (pipe.second.getId() == parametr) {
-				result.push_back(pipe.second.getId());
-			}
-		}
-		if (param_search == 2) {
-			if (pipe.second.getRepair() == (bool)parametr) {
-				result.push_back(pipe.second.getId());
-			}
-		}
-		
-
-	}
-	return result;
-}
-
-
-std::vector<int> SearchStationsByFilter(std::map<int, Station>& Stations, std::string parametr) {
-	std::vector<int> result;
-	for (auto& station : Stations) {
-		if (station.second.getName() == parametr) {
-			result.push_back(station.second.getId());
+		if (f(o.second, parametr))
+		{
+			result.push_back(o.second.getId());
 		}
 	}
 	return result;
 }
 
 template <typename T>
-std::vector<int> SearchStationsByFilter(std::map<int, Station>& Stations, T parametr) {
+using FilterStation = bool(*)(Station& t, T parametr);
+template <typename T>
+std::vector<int> SearchByFilterStation(std::map<int, Station>& t, FilterStation<T> f, T parametr)
+{
 	std::vector<int> result;
-	for (auto& station : Stations) {
-		if (station.second.getEfficiency() == parametr)
-			result.push_back(station.second.getId());
+	for (auto& o : t)
+	{
+		if (f(o.second, parametr))
+		{
+			result.push_back(o.second.getId());
+		}
 	}
 	return result;
 }
+
