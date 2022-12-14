@@ -22,5 +22,6 @@ public:
 	void CreateMatrixForMaximumFlow(std::map<int, Pipe>& Pipes);
 	double MinimumPath(std::map<int, Pipe>& Pipes, std::map<int, Station>& Stations);
 	double MaximumFlow(std::map<int, Pipe>& Pipes, std::map<int, Station>& Stations);
+	void Delete(std::map<int, Pipe>& Pipes);
 	std::vector<int> TopologicalSort(std::map<int, Pipe>& Pipes);
 };

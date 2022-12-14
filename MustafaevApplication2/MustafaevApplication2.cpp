@@ -45,7 +45,7 @@ int main() {
 	StationsMap Stations;
 	GasTransportation gt;
 	while (1) {
-		switch (getNumber("Выберите действие: ", 0, 15))
+		switch (getNumber("Выберите действие: ", 0, 16))
 		{
 		case 0:
 			return 0;
@@ -74,71 +74,91 @@ int main() {
 			break;
 		case 4:
 		{
-			ofstream fout = OpenFout(getText("Ввведите названме файла: "));
-			if (Check(Pipes))
-				SaveToFile(fout, Pipes);
-			else cout << "Трубы не найдены" << endl;
-			if (Check(Stations))
-				SaveToFile(fout, Stations);
-			else cout << "Станции не найдены" << endl;
-			FoutClose(fout);
-
-			if (gt.getIdPipes().size() == 0)
+			switch (getNumber("Выберите пункт сохранения : \n1) Сохранить трубы и станции\n2) Сохранить гтс\n: ", 1, 2)) {
+			case 1:
+			{
+				ofstream fout = OpenFout(getText("Ввведите названме файла: "));
+				if (Check(Pipes))
+					SaveToFile(fout, Pipes);
+				else cout << "Трубы не найдены" << endl;
+				if (Check(Stations))
+					SaveToFile(fout, Stations);
+				else cout << "Станции не найдены" << endl;
+				FoutClose(fout);
 				break;
-			if (gt.getIdStations().size() == 0)
+			}
+			case 2:
+			{
+				if (gt.getIdPipes().size() == 0)
+					break;
+				if (gt.getIdStations().size() == 0)
+					break;
+				ofstream fout1;
+				fout1.open("gt.txt");
+				fout1 << gt.getIdStations().size() << endl;
+				fout1 << gt.getIdPipes().size() << endl;
+				gt.Save(fout1);
 				break;
-			ofstream fout1;
-			fout1.open("gt.txt");
-			fout1 << gt.getIdStations().size() << endl;
-			fout1 << gt.getIdPipes().size() << endl;
-			gt.Save(fout1);
+			}
 
+			}
 			break;
 		}
 		case 5:
 		{
-			int countStation, countPipe;
-			ifstream fin = OpenFin(getText("Введите название файла: "));
-			fin >> countPipe;
-			if (countPipe > 0) {
-				Pipe::IDp = 0;
-				Pipes.clear();
-				for (int i = 0; i < countPipe; i++) {
-					Pipe pipe;
-					pipe.Load(fin);
-					Pipes.insert(make_pair(Pipe::IDp, pipe));
-				}
-			}
-			fin >> countStation;
-			if (countStation > 0) {
-				Station::IDcs = 0;
-				Stations.clear();
-				for (int i = 0; i < countStation; i++) {
-					Station station;
-					station.Load(fin);
-					Stations.insert(make_pair(Station::IDcs, station));
-				}
-			}
-
-			ifstream fin1;
-			fin1.open("gt.txt");
-			if (fin1.is_open()) {
-				int count1;
-				int count2;
-				fin1 >> count1;
-				fin1 >> count2;
-				if (count1 > 0) {
-					for (int i = 0; i < count1; i++) {
-						gt.Load(fin1, "s");
+			switch (getNumber("Выберите пункт загрузки : \n1) Загрузить трубы и станции\n2) Загрузить гтс\n: ", 1, 2)) {
+			case 1:
+			{
+				int countStation, countPipe;
+				ifstream fin = OpenFin(getText("Введите название файла: "));
+				fin >> countPipe;
+				if (countPipe > 0) {
+					Pipe::IDp = 0;
+					Pipes.clear();
+					for (int i = 0; i < countPipe; i++) {
+						Pipe pipe;
+						pipe.Load(fin);
+						Pipes.insert(make_pair(Pipe::IDp, pipe));
 					}
 				}
-				if (count2 > 0) {
-					for (int i = 0; i < count2; i++) {
-						gt.Load(fin1, "p");
+				fin >> countStation;
+				if (countStation > 0) {
+					Station::IDcs = 0;
+					Stations.clear();
+					for (int i = 0; i < countStation; i++) {
+						Station station;
+						station.Load(fin);
+						Stations.insert(make_pair(Station::IDcs, station));
+					}
+			
+					
+				}
+				break;
+			}
+			case 2:
+			{
+				ifstream fin1;
+				fin1.open("gt.txt");
+				if (fin1.is_open()) {
+					int count1;
+					int count2;
+					fin1 >> count1;
+					fin1 >> count2;
+					if (count1 > 0) {
+						for (int i = 0; i < count1; i++) {
+							gt.Load(fin1, "s");
+						}
+					}
+					if (count2 > 0) {
+						for (int i = 0; i < count2; i++) {
+							gt.Load(fin1, "p");
+						}
 					}
 				}
-			}
 
+				break;
+			}
+			}
 			break;
 		}
 		case 6:
@@ -176,6 +196,11 @@ int main() {
 					cout << Pipes[i] << endl;
 					int action = getNumber("1) Удалмть\n2) Пропустить\n- ", 1, 2);
 					if (action == 1)
+						if (Pipes[i].getInputStation() != 0 || Pipes[i].getOutputStation() != 0)
+						{
+							cout << "Удалите трубу из газотранспортной сети" << endl;
+							break;
+						}
 						Delete(Pipes, i);
 				}
 				break;
@@ -254,7 +279,7 @@ int main() {
 			PrintMenu();
 			break;
 		case 11:
-			if (Check(Pipes) && Check(Stations))
+			if (Check(Stations))
 				gt.Create(Pipes);
 			break;
 		case 12:
@@ -291,6 +316,13 @@ int main() {
 			cout << "Минимальный путь: " << gt.MinimumPath(Pipes, Stations) << endl;
 			break;
 		}
+		case 16:
+		{
+			gt.Delete(Pipes);
+			break;
+		}
+
+
 		}
 	}
 }

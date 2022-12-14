@@ -11,6 +11,8 @@ void GasTransportation::Create(std::map<int, Pipe>& Pipes)
 		id2 = getNumber("Введите id второй станции: ", 0, Station::IDcs);
 		if (id1 != id2)
 			break;
+		if (id1 == 0 || id2 == 0)
+			break;
 	}
 	if(std::find(IdStations.begin(), IdStations.end(), id1) == IdStations.end())
 		IdStations.push_back(id1);
@@ -18,8 +20,15 @@ void GasTransportation::Create(std::map<int, Pipe>& Pipes)
 	if (std::find(IdStations.begin(), IdStations.end(), id2) == IdStations.end())
 		IdStations.push_back(id2);
 	
-	std::vector<int> finded;
-	while (true) {
+	/*std::vector<int> finded;*/
+	Pipe pipe;
+	std::cin >> pipe;
+	pipe.setInputStation(id1);
+	pipe.setOutputStation(id2);
+	Pipes.insert(std::make_pair(Pipe::IDp, pipe));
+	IdPipes.push_back(pipe.getId());
+	/*while (true) {
+	* 
 		switch (getNumber("Выберите диаметр трубы\n1) 500 мм\n2) 700 мм\n3) 1400 мм\nВыберите: ", 1, 3)) {
 
 		case 1:
@@ -44,7 +53,7 @@ void GasTransportation::Create(std::map<int, Pipe>& Pipes)
 				break;
 			}
 		}
-	}
+	}*/
 	std::cout << "Газотранспортная сеть создана" << std::endl;
 	
 }
@@ -98,17 +107,17 @@ void GasTransportation::CreateMatrixForMinimumPath(std::map<int, Pipe>& Pipes)
 			if (pipe.second.getOutputStation() == IdStations[i])
 				second = i;
 		}
-		if (first > -1 && second > -1)
+		if (first > -1 && second > -1 && pipe.second.getRepair() != 1)
 			matrix[first][second] = pipe.second.getLength();
 	}
-	for (int i = 0; i < IdStations.size(); i++)
+	/*for (int i = 0; i < IdStations.size(); i++)
 	{
 		for (int j = 0; j < IdStations.size(); j++)
 		{
 			std::cout << matrix[i][j];
 		}
 		std::cout << std::endl;
-	}
+	}*/
 }
 
 void GasTransportation::CreateMatrixForMaximumFlow(std::map<int, Pipe>& Pipes)
@@ -131,17 +140,19 @@ void GasTransportation::CreateMatrixForMaximumFlow(std::map<int, Pipe>& Pipes)
 			if (pipe.second.getOutputStation() == IdStations[i])
 				second = i;
 		}
-		if (first > -1 && second > -1)
+		if (first > -1 && second > -1 && pipe.second.getRepair() != 1)
 			matrix[first][second] = pipe.second.getEfficiency();
+		else
+			matrix[first][second] = 0;
 	}
-	for (int i = 0; i < IdStations.size(); i++)
+	/*for (int i = 0; i < IdStations.size(); i++)
 	{
 		for (int j = 0; j < IdStations.size(); j++)
 		{
 			std::cout << matrix[i][j];
 		}
 		std::cout << std::endl;
-	}
+	}*/
 }
 
 
@@ -174,7 +185,9 @@ int findindex(std::vector<int> v, int value) {
 		if (v[i] == value)
 			return i;
 	}
+	return -1;
 }
+
 
 std::vector<int> GasTransportation::TopologicalSort(std::map<int, Pipe>& Pipes)
 {
@@ -272,6 +285,10 @@ double GasTransportation::MaximumFlow(std::map<int, Pipe>& Pipes, std::map<int, 
 		return -1;
 	}
 
+
+	if (findindex(IdStations, id1) == -1 && findindex(IdStations, id2) == -1)
+		return -1;
+
 	Stations[id1].weight = INFINITY;
 	Stations[id2].weight = 0;
 
@@ -333,4 +350,22 @@ double GasTransportation::MaximumFlow(std::map<int, Pipe>& Pipes, std::map<int, 
 	}
 
 	return F;
+}
+
+void GasTransportation::Delete(std::map<int, Pipe>& Pipes)
+{
+	matrix.clear();
+
+	for (int i = 0; i < matrix.size(); i++)
+		matrix[i].clear();
+
+	IdStations.clear();
+
+	for (auto& p : IdPipes) {
+		Pipes[p].setInputStation(0);
+		Pipes[p].setOutputStation(0);
+	}
+	IdPipes.clear();
+
+	std::cout << "Сети удалены" << std::endl;
 }
