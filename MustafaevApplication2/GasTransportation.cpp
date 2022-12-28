@@ -7,8 +7,8 @@ void GasTransportation::Create(std::map<int, Pipe>& Pipes)
 {
 	int id1, id2;
 	while (true) {
-		id1 = getNumber("Введите id первой станции: ", 0, Station::IDcs);
-		id2 = getNumber("Введите id второй станции: ", 0, Station::IDcs);
+		id1 = getNumber("Введите id первой станции: ", 1, Station::IDcs);
+		id2 = getNumber("Введите id второй станции: ", 1, Station::IDcs);
 		if (id1 != id2)
 			break;
 		if (id1 == 0 || id2 == 0)
@@ -21,12 +21,65 @@ void GasTransportation::Create(std::map<int, Pipe>& Pipes)
 		IdStations.push_back(id2);
 	
 	/*std::vector<int> finded;*/
-	Pipe pipe;
+	/*Pipe pipe;
 	std::cin >> pipe;
 	pipe.setInputStation(id1);
 	pipe.setOutputStation(id2);
 	Pipes.insert(std::make_pair(Pipe::IDp, pipe));
-	IdPipes.push_back(pipe.getId());
+	if (std::find(IdPipes.begin(), IdPipes.end(), pipe.getId()) == IdPipes.end())
+		IdPipes.push_back(pipe.getId());*/
+
+	std::vector<int> finded;
+	while (true) {
+		switch (getNumber("Выберите диаметр трубы\n1) 500\n2) 700\n3) 1400\nВыберите: ", 1, 3)) {
+			case 1:
+				finded = SearchByFilterPipe(Pipes, FilterGetByDiametrPipe, (double)500);
+				break;
+			case 2:
+				finded = SearchByFilterPipe(Pipes, FilterGetByDiametrPipe, (double)700);
+				break;
+
+			case 3:
+				finded = SearchByFilterPipe(Pipes, FilterGetByDiametrPipe, (double)1400);
+				break;
+		}
+		int k = 0;
+		if (finded.size() == 0) {
+			Pipe pipe;
+			std::cin >> pipe;
+			pipe.setInputStation(id1);
+			pipe.setOutputStation(id2);
+			Pipes.insert(std::make_pair(Pipe::IDp, pipe));
+			if (std::find(IdPipes.begin(), IdPipes.end(), pipe.getId()) == IdPipes.end())
+				IdPipes.push_back(pipe.getId());
+			break;
+		}
+		else {
+			
+			for (int i = 0; i < finded.size(); i++) {
+				if (Pipes[finded[i]].getInputStation() == 0 && Pipes[finded[i]].getOutputStation() == 0) {
+					std::cout << "Труба найдена" << std::endl;
+					Pipes[finded[i]].setInputStation(id1);
+					Pipes[finded[i]].setOutputStation(id2);
+					k++;
+					if (std::find(IdPipes.begin(), IdPipes.end(), Pipes[finded[i]].getId()) == IdPipes.end())
+						IdPipes.push_back(Pipes[finded[i]].getId());
+					break;
+				}
+			}
+		}
+		if (k == 0) {
+			Pipe pipe;
+			std::cin >> pipe;
+			pipe.setInputStation(id1);
+			pipe.setOutputStation(id2);
+			Pipes.insert(std::make_pair(Pipe::IDp, pipe));
+			if (std::find(IdPipes.begin(), IdPipes.end(), pipe.getId()) == IdPipes.end())
+				IdPipes.push_back(pipe.getId());
+			break;
+		}
+	}
+
 	/*while (true) {
 	* 
 		switch (getNumber("Выберите диаметр трубы\n1) 500 мм\n2) 700 мм\n3) 1400 мм\nВыберите: ", 1, 3)) {
@@ -54,6 +107,7 @@ void GasTransportation::Create(std::map<int, Pipe>& Pipes)
 			}
 		}
 	}*/
+	finded.clear();
 	std::cout << "Газотранспортная сеть создана" << std::endl;
 	
 }
@@ -142,8 +196,6 @@ void GasTransportation::CreateMatrixForMaximumFlow(std::map<int, Pipe>& Pipes)
 		}
 		if (first > -1 && second > -1 && pipe.second.getRepair() != 1)
 			matrix[first][second] = pipe.second.getEfficiency();
-		else
-			matrix[first][second] = 0;
 	}
 	/*for (int i = 0; i < IdStations.size(); i++)
 	{
@@ -228,8 +280,12 @@ double GasTransportation::MinimumPath(std::map<int, Pipe>& Pipes, std::map<int,S
 		return -1;
 	}
 	
+	for (auto& i : IdStations) {
+		Stations[i].weight = INFINITY;
+	}
 	Stations[id1].weight = 0;
-	Stations[id2].weight = INFINITY;
+	//Stations[id2].weight = INFINITY;
+	//Stations[id2].weight = INFINITY;
 
 	
 	CreateMatrixForMinimumPath(Pipes);
@@ -271,6 +327,11 @@ double GasTransportation::MinimumPath(std::map<int, Pipe>& Pipes, std::map<int,S
 		}
 		std::swap(queue[0], queue[id]);
 		iterator = findindex(IdStations, queue[0]);
+	}
+
+	matrix.clear();
+	for (int i = 0; i < matrix.size(); i++) {
+		matrix[i].clear();
 	}
 
 }
@@ -340,6 +401,8 @@ double GasTransportation::MaximumFlow(std::map<int, Pipe>& Pipes, std::map<int, 
 			int pr = index1;
 			index2 = index1;
 			index1 = findindex(IdStations, Stations[IdStations[pr]].last);
+			if (index1 < 0)
+				break;
 			iter = Stations[iter].last;
 		}
 		for (auto& i : IdStations)
@@ -347,6 +410,11 @@ double GasTransportation::MaximumFlow(std::map<int, Pipe>& Pipes, std::map<int, 
 			Stations[i].weight = 0;
 		}
 		F += s;
+	}
+
+	matrix.clear();
+	for (int i = 0; i < matrix.size(); i++) {
+		matrix[i].clear();
 	}
 
 	return F;

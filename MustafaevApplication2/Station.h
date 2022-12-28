@@ -16,8 +16,8 @@ public:
 	Station();
 	static int IDcs;
 
-	double weight;
-	int last;
+	double weight = 0;
+	int last = 0;
 	int getId() const;
 	std::string getName() const;
 	int getCountWorkshop() const;
